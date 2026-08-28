@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Online Mock Test Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+   
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans h-dvh flex flex-col overflow-hidden no-select">
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="flex flex-1 flex-col items-center justify-center p-6 w-full h-full absolute top-0 left-0 bg-slate-50 z-[70]">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center relative">
+            <i class="fas fa-university text-5xl text-blue-600 mb-6"></i>
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Welcome to Mock Test</h1>
+            <p class="text-slate-500 mb-8">Please click below to access the student portal and select your subjects.</p>
+            
+            <button onclick="window.showStudentDashboard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-3 text-lg">
+                <i class="fas fa-user-graduate"></i> I am a Student
+            </button>
+        </div>
+    </div>
+
+    <!-- STUDENT DASHBOARD SCREEN (Subject Selection) -->
+    <div id="student-dashboard-screen" class="hidden flex-1 flex-col items-center justify-center p-4 sm:p-6 w-full h-full absolute top-0 left-0 bg-slate-50 z-[60] overflow-y-auto">
+        <div class="max-w-4xl w-full my-auto py-8">
+            <button onclick="window.showWelcomeScreen()" class="mb-6 text-slate-500 hover:text-slate-800 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </button>
+            <div class="text-center mb-8">
+                <i class="fas fa-university text-5xl text-blue-600 mb-4"></i>
+                <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">Mock Test Portal</h1>
+                <p class="text-slate-500">Choose a category module below to begin your mock test.</p>
+            </div>
+            
+            <!-- Adaptive Grid: 2 cols on mobile, 3 on tablet, 4 on desktop -->
+            <div id="student-categories-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 pb-8">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT START SCREEN -->
+    <div id="start-screen" class="hidden flex-1 flex flex-col items-center justify-center p-4 sm:p-6 w-full h-full absolute top-0 left-0 bg-white z-50 overflow-y-auto">
+        <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100 text-center relative my-auto">
+            <button onclick="window.showStudentDashboard()" class="absolute top-4 sm:top-6 left-4 sm:left-6 text-slate-500 hover:text-slate-800 transition-colors p-2">
+                <i class="fas fa-arrow-left sm:mr-2"></i> <span class="hidden sm:inline">Back</span>
+            </button>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-3xl sm:text-4xl mt-6 sm:mt-4">
+                <i class="fas fa-laptop-code"></i>
+            </div>
+            <h1 id="start-screen-title" class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">Comprehensive Mock Test</h1>
+            <p class="text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">Test your knowledge across the subjects.</p>
+            
+            <!-- Mobile-friendly info grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left mb-8 bg-slate-50 p-4 sm:p-6 rounded-xl border border-slate-100 text-sm sm:text-base">
+                <div class="flex items-center"><i class="fas fa-list-ol w-6 text-blue-500 text-center mr-2"></i> <strong>Total Questions:</strong> <span id="start-total-q" class="ml-1">0</span></div>
+                <div class="flex items-center"><i class="fas fa-stopwatch w-6 text-blue-500 text-center mr-2"></i> <strong>Duration:</strong> <span class="ml-1">60 Minutes</span></div>
+                <div class="flex items-center"><i class="fas fa-check-circle w-6 text-green-500 text-center mr-2"></i> <strong>Correct Answer:</strong> <span class="ml-1">+1 Mark</span></div>
+                <div class="flex items-center"><i class="fas fa-times-circle w-6 text-red-500 text-center mr-2"></i> <strong>Negative Marking:</strong> <span class="ml-1">None</span></div>
+            </div>
+
+            <button onclick="window.startTest()" id="begin-test-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-md transition-colors text-lg w-full sm:w-auto flex items-center justify-center mx-auto">
+                I am ready to begin <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <div id="no-q-warning" class="hidden mt-4 text-red-500 text-sm font-bold">No questions available in this category.</div>
+        </div>
+    </div>
+
+    <!-- TEST SCREEN -->
+    <div id="test-screen" class="hidden flex-col h-full w-full relative z-[100] bg-white">
+        <header class="bg-slate-800 text-white shadow-md p-3 sm:p-4 flex justify-between items-center shrink-0 safe-top">
+            <div class="flex items-center gap-2 sm:gap-3 truncate">
+                <i class="fas fa-graduation-cap text-xl sm:text-2xl text-blue-400"></i>
+                <h1 class="text-base sm:text-xl font-bold truncate test-title-display">Mock Test</h1>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <div class="bg-slate-700 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2 border border-slate-600">
+                    <i class="fas fa-clock text-blue-400 text-sm sm:text-base"></i>
+                    <span id="timer" class="font-mono text-base sm:text-xl font-bold tracking-wider">60:00</span>
+                </div>
+                <button onclick="window.confirmSubmit()" class="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded font-semibold transition-colors text-xs sm:text-sm shadow-sm">
+                    Submit
+                </button>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden relative">
+            <!-- Left Side: Question Area -->
+            <div class="flex-1 flex flex-col bg-white overflow-hidden lg:border-r lg:border-slate-200">
+                <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-700">Question <span id="current-q-num">1</span> <span class="text-slate-400 font-normal text-xs sm:text-sm ml-1">of <span id="test-total-q">50</span></span></h2>
+                    <div class="text-xs sm:text-sm text-slate-500 font-medium bg-white px-2 sm:px-3 py-1 rounded-full border border-slate-200 shadow-sm">Marks: +1.0</div>
+                </div>
+
+                <div class="p-4 sm:p-6 md:p-8 flex-1 overflow-y-auto">
+                    <div id="question-text" class="text-lg sm:text-xl text-slate-800 mb-6 sm:mb-8 font-medium leading-relaxed"></div>
+                    <div id="options-container" class="space-y-3 sm:space-y-4 max-w-4xl pb-16 lg:pb-0"></div>
+                </div>
+
+                <!-- Bottom Action Bar -->
+                <div class="p-3 sm:p-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:shadow-none z-10 relative">
+                    <div class="flex gap-2">
+                        <button onclick="window.markForReview()" class="px-3 sm:px-4 py-2 sm:py-2.5 border border-purple-500 text-purple-600 bg-white hover:bg-purple-50 rounded font-medium transition text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center h-full">
+                            <i class="fas fa-bookmark sm:mr-1 mb-1 sm:mb-0"></i>
+                            <span>Mark</span>
+                        </button>
+                        <button onclick="window.clearResponse()" class="px-3 sm:px-4 py-2 sm:py-2.5 border border-slate-300 text-slate-600 bg-white hover:bg-slate-100 rounded font-medium transition text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center h-full">
+                            <i class="fas fa-eraser sm:mr-1 mb-1 sm:mb-0"></i>
+                            <span>Clear</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Palette Toggle Button (Middle) -->
+                    <button onclick="window.togglePalette()" class="lg:hidden w-12 h-12 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center text-xl absolute left-1/2 -top-6 transform -translate-x-1/2 border-2 border-white ring-2 ring-slate-100 z-20 transition-transform active:scale-95">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="window.prevQuestion()" class="px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded font-medium transition text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center h-full">
+                            <i class="fas fa-chevron-left sm:mr-1 mb-1 sm:mb-0"></i>
+                            <span>Prev</span>
+                        </button>
+                        <button onclick="window.saveAndNext()" class="px-4 sm:px-6 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition shadow-sm text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center h-full">
+                            <i class="fas fa-save sm:mr-1 mb-1 sm:mb-0 hidden sm:block"></i>
+                            <span>Save & Next</span>
+                            <i class="fas fa-chevron-right ml-1 sm:hidden"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Drawer Background Overlay -->
+            <div id="palette-overlay" onclick="window.togglePalette()" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 z-40 transition-opacity lg:hidden"></div>
+
+            <!-- Right Side: Palette Drawer -->
+            <div id="palette-drawer" class="w-[85vw] max-w-[320px] lg:w-80 bg-slate-50 flex flex-col shrink-0 transition-transform duration-300 fixed right-0 top-0 bottom-0 z-50 transform translate-x-full lg:relative lg:translate-x-0 border-l border-slate-200 shadow-2xl lg:shadow-none h-dvh lg:h-auto">
+                <div class="p-4 border-b border-slate-200 shrink-0 bg-white shadow-sm lg:shadow-none z-10">
+                    <div class="flex justify-between items-center lg:hidden mb-4">
+                        <h3 class="font-bold text-slate-700 text-lg">Question Palette</h3>
+                        <button onclick="window.togglePalette()" class="w-8 h-8 flex items-center justify-center bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-slate-600 font-medium">
+                        <div class="flex items-center gap-2"><div class="w-5 sm:w-6 h-5 sm:h-6 rounded-md status-answered flex items-center justify-center text-white text-[10px] sm:text-xs"><span id="count-answered">0</span></div> Answered</div>
+                        <div class="flex items-center gap-2"><div class="w-5 sm:w-6 h-5 sm:h-6 rounded-md status-not-answered flex items-center justify-center text-white text-[10px] sm:text-xs"><span id="count-not-answered">0</span></div> Not Answered</div>
+                        <div class="flex items-center gap-2"><div class="w-5 sm:w-6 h-5 sm:h-6 rounded-md status-not-visited flex items-center justify-center text-[10px] sm:text-xs"><span id="count-not-visited">0</span></div> Not Visited</div>
+                        <div class="flex items-center gap-2"><div class="w-5 sm:w-6 h-5 sm:h-6 rounded-md status-marked flex items-center justify-center text-white text-[10px] sm:text-xs"><span id="count-marked">0</span></div> Marked</div>
+                        <div class="flex items-center gap-2 col-span-2"><div class="w-5 sm:w-6 h-5 sm:h-6 rounded-md status-marked-answered flex items-center justify-center text-white text-[10px] sm:text-xs"><span id="count-marked-answered">0</span></div> Answered & Marked for Review</div>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 flex-1 overflow-y-auto palette-scroll bg-slate-50 relative pb-20 lg:pb-4">
+                    <h3 class="font-bold text-slate-700 mb-3 text-xs sm:text-sm uppercase tracking-wider sticky top-0 bg-slate-50 py-1 z-10 shadow-sm lg:shadow-none">All Questions</h3>
+                    <div id="palette-grid" class="grid grid-cols-5 gap-1.5 sm:gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="hidden flex-1 flex flex-col items-center justify-center p-4 w-full h-full absolute top-0 left-0 bg-slate-50 z-[110] overflow-y-auto">
+        <div class="max-w-3xl w-full bg-white rounded-2xl shadow-xl p-5 sm:p-10 border border-gray-100 my-auto">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-4xl sm:text-5xl">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-bold text-slate-800 mb-2">Test Submitted!</h1>
+                <p class="text-slate-500 text-sm sm:text-lg">Here is your performance summary.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-10">
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 sm:p-6 text-center shadow-sm">
+                    <div class="text-blue-500 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Total Score</div>
+                    <div class="text-3xl sm:text-4xl font-black text-blue-700"><span id="res-score">0</span><span class="text-lg sm:text-2xl text-blue-400 font-bold">/<span id="res-total">50</span></span></div>
+                </div>
+                <div class="bg-green-50 border border-green-100 rounded-xl p-4 sm:p-6 text-center shadow-sm">
+                    <div class="text-green-600 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Correct Answers</div>
+                    <div class="text-3xl sm:text-4xl font-black text-green-700" id="res-correct">0</div>
+                </div>
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 sm:p-6 text-center shadow-sm">
+                    <div class="text-red-500 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">Incorrect Answers</div>
+                    <div class="text-3xl sm:text-4xl font-black text-red-700" id="res-incorrect">0</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-slate-200">
+                <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-3 sm:mb-4 border-b pb-2">Detailed Statistics</h3>
+                <div class="space-y-2 sm:space-y-3 text-sm sm:text-base">
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>Total Attempted:</span>
+                        <span class="font-bold text-slate-800" id="res-attempted">0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>Questions Unattempted:</span>
+                        <span class="font-bold text-slate-800" id="res-unattempted">0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>Accuracy Rate:</span>
+                        <span class="font-bold text-slate-800" id="res-accuracy">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 sm:h-3 mt-4 overflow-hidden flex">
+                        <div id="bar-correct" class="bg-green-500 h-full" style="width: 0%"></div>
+                        <div id="bar-incorrect" class="bg-red-500 h-full" style="width: 0%"></div>
+                        <div id="bar-unattempted" class="bg-slate-300 h-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <button onclick="location.reload()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 sm:py-4 px-8 rounded-xl shadow-md transition-colors text-lg">
+                    Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="submit-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-sm w-full transform transition-transform">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mb-2 text-center">Submit Test?</h3>
+            <p class="text-slate-600 mb-6 text-center text-sm sm:text-base">Are you sure you want to submit? You will not be able to change your answers after submission.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-3 w-full">
+                <button onclick="window.closeSubmitModal()" class="w-full px-4 py-3 sm:py-2 border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-colors order-2 sm:order-1">Cancel</button>
+                <button onclick="window.submitTest()" class="w-full px-4 py-3 sm:py-2 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors shadow-sm order-1 sm:order-2">Yes, Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script  src="script.js"></script>
+</body>
+</html>
